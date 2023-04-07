@@ -16,10 +16,10 @@ const RandomCocktail = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center font-azeret-mono">
       {cocktail ? (
         <div className="card w-96 bg-base-100 shadow-xl mb-6">
-          <figure className="h-32 w-full overflow-hidden">
+          <figure className="h-43 w-full overflow-hidden">
             <img src={cocktail.strDrinkThumb} alt={cocktail.strDrink} className="w-full h-full object-cover object-center" />
           </figure>
           <div className="card-body">
@@ -28,14 +28,7 @@ const RandomCocktail = () => {
               className="text-brand-500 hover:text-brand-600 transition-colors duration-200"
               onClick={() => setShowDescription(!showDescription)}
             >
-              {showDescription ? 'Hide' : 'Show'} description
-            </button>
-            <br />
-            <button
-              className="bg-brand-500 text-white py-2 px-4 rounded-md mt-4"
-              onClick={fetchRandomCocktail}
-            >
-              New Drink
+              {showDescription ? 'Hide' : ' Show'} description
             </button>
             {showDescription && (
               <>
@@ -58,6 +51,12 @@ const RandomCocktail = () => {
           </div>
         </div>
       ) : null}
+      <button
+        className="bg-brand-500 text-white py-2 px-4 rounded-md mt-4"
+        onClick={fetchRandomCocktail}
+      >
+        New Drink
+      </button>
     </div>
   );
 };
