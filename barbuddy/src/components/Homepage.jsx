@@ -8,7 +8,7 @@ function HomePage() {
           <div class="hero-content text-center">
             <div class="max-w-md">
               <Link to="/random">
-              <button className="btn">Randomize</button>
+              <button className="btn">Randomize Drink</button>
                 </Link>
             </div>
           </div>
