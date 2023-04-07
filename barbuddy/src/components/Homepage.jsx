@@ -1,5 +1,5 @@
 import React from "react";
-import Cards from "./Cards";
+import { Link } from "react-router-dom";
 
 function HomePage() {
     return (
@@ -7,7 +7,9 @@ function HomePage() {
         <div class="hero min-h-screen">
           <div class="hero-content text-center">
             <div class="max-w-md">
-              <Cards />
+              <Link to="/random">
+              <button className="btn">Randomize</button>
+                </Link>
             </div>
           </div>
         </div>
