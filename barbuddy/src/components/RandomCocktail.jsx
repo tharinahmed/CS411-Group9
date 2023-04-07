@@ -24,12 +24,14 @@ const RandomCocktail = () => {
           </figure>
           <div className="card-body">
             <h2 className="card-title">{cocktail.strDrink}</h2>
-            <button
-              className="text-brand-500 hover:text-brand-600 transition-colors duration-200"
-              onClick={() => setShowDescription(!showDescription)}
-            >
-              {showDescription ? 'Hide' : ' Show'} description
-            </button>
+            <div className="flex justify-start">
+              <button
+                className="text-brand-500 hover:text-brand-600 transition-colors duration-200 mr-4"
+                onClick={() => setShowDescription(!showDescription)}
+              >
+                {showDescription ? 'Hide' : ' Show'} description
+              </button>
+            </div>
             {showDescription && (
               <>
                 <h3 className="text-xl font-bold mb-2 mt-4">Ingredients</h3>
