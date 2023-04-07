@@ -9,8 +9,8 @@ function NavBar() {
         </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
-            <li className="text-sm text-highlights"><a href="/discover">Discover</a></li>
-            <li className="text-sm text-highlights"><a href="/random">Randomize</a></li>
+            <li className="text-sm text-highlights"><a href="/discover">discover</a></li>
+            <li className="text-sm text-highlights"><a href="/random">randomize</a></li>
           </ul>
         </div>
       </div>
