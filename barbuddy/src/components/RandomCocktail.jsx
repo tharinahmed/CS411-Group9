@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const RandomCocktail = () => {
   const [cocktail, setCocktail] = useState(null);
@@ -10,6 +10,10 @@ const RandomCocktail = () => {
     setCocktail(data.drinks[0]);
     setShowDescription(false);
   };
+
+  useEffect(() => {
+    fetchRandomCocktail();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
