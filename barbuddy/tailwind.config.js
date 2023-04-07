@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
-  content: 
-    ['node_modules/daisyui/dist/**/*.js', 'node_modules/react-daisyui/dist/**/*.js'],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {
-      colors: {
-        "background": "#294340", /**our main background color */
-        "highlights": "D4D9B1"  /**lighter, highlight colors */
-      },
-
+  extend: {
+    colors: {
+      "background": "#294340",
+      "highlights": "#D4D9B1",
+    },
+    fontFamily: {
+      'azeret-mono': ['Azeret Mono', 'monospace'],
     },
   },
+},
   plugins: [require("daisyui")],
-}
+};

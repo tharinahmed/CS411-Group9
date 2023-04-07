@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 function HomePage() {
     return (
-        <div className="App">
-        <div class="hero min-h-screen">
-          <div class="hero-content text-center">
-            <div class="max-w-md">
+        <div className="App font-azeret-mono">
+        <div className="hero min-h-screen">
+          <div className="hero-content text-center">
+            <div className="max-w-md">
               <Link to="/random">
               <button className="btn">Randomize Drink</button>
                 </Link>

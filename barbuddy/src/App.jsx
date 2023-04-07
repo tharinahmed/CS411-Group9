@@ -8,7 +8,7 @@ import Discover from "./components/Discover";
 
 function App() {
   return (
-    <div>
+    <div className="font-azeret-mono">
       <NavBar />
       <BrowserRouter>
       <Routes>
