@@ -26,7 +26,7 @@ const RandomCocktail = () => {
             <h2 className="card-title">{cocktail.strDrink}</h2>
             <div className="flex justify-start">
               <button
-                className="text-brand-500 hover:text-brand-600 transition-colors duration-200 mr-4"
+                className="text-brand-500 hover:text-brand-600 transition-colors duration-200 mr-4 underline"
                 onClick={() => setShowDescription(!showDescription)}
               >
                 {showDescription ? 'Hide' : ' Show'} description
@@ -54,7 +54,7 @@ const RandomCocktail = () => {
         </div>
       ) : null}
       <button
-        className="bg-brand-500 text-white py-2 px-4 rounded-md mt-4"
+        className="text-background bg-highlights border-2 border-highlights bg-brand-500 py-2 px-4 rounded-md mt-4"
         onClick={fetchRandomCocktail}
       >
         New Drink

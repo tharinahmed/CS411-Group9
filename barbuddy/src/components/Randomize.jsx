@@ -3,7 +3,7 @@ import RandomCocktail from "./RandomCocktail";
 
 function Randomize(){
     return (
-        <div  className="-mt-14 bg-background">
+        <div  className=" bg-background">
              <RandomCocktail />
         </div>
 

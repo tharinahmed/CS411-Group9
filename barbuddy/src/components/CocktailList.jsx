@@ -1,17 +1,28 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 
 const CocktailList = () => {
   const [cocktails, setCocktails] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState("All");
+  const [selectedFilter, setSelectedFilter] = useState("");
 
   useEffect(() => {
     const fetchCocktails = async () => {
-      const response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=${selectedFilter === "All" ? "" : selectedFilter}`
-      );
+      let url = "";
+      if (selectedFilter === "" || selectedFilter === "All") {
+        url = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Alcoholic";
+      } else {
+        url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=${selectedFilter}`;
+      }
+
+      const response = await fetch(url);
       const data = await response.json();
-      setCocktails(data.drinks);
+
+      if (selectedFilter === "" || selectedFilter === "All") {
+        const nonAlcoholicResponse = await fetch("https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic");
+        const nonAlcoholicData = await nonAlcoholicResponse.json();
+        setCocktails([...data.drinks, ...nonAlcoholicData.drinks]);
+      } else {
+        setCocktails(data.drinks);
+      }
     };
 
     fetchCocktails();
@@ -21,15 +32,15 @@ const CocktailList = () => {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center font-azeret-mono">
       <div className="mb-6">
         <div className="dropdown dropdown-bottom">
-          <label tabIndex={0} className="btn m-1 bg-transparent lowercase text-highlights">Filter</label>
-          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-            <li>
+          <label tabIndex={0} className="btn m-1  bg-transparent border-rounded border-2 border-highlights lowercase text-highlights hover:bg-highligths hover:text-background">Filter</label>
+          <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-highlights rounded-box w-52">
+            <li className="hover:bg-background focus:bg-background hover:text-highlights">
               <a onClick={() => setSelectedFilter("All")}>All</a>
             </li>
-            <li>
+            <li className="hover:bg-background focus:bg-background hover:text-highlights">
               <a onClick={() => setSelectedFilter("Alcoholic")}>Alcoholic</a>
             </li>
-            <li>
+            <li className="hover:bg-background focus:bg-background hover:text-highlights">
               <a onClick={() => setSelectedFilter("Non_Alcoholic")}>Non-Alcoholic</a>
             </li>
           </ul>
@@ -44,6 +55,7 @@ const CocktailList = () => {
               className="w-full h-full object-cover object-center"
             />
           </figure>
+          
           <div className="card-body">
             <h2 className="card-title">{cocktail.strDrink}</h2>
           </div>
