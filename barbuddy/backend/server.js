@@ -5,27 +5,44 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 5000; // can always change
+const PORT = process.env.PORT || 5000; // can always change
 
-app.use(cors());
 app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:3000' //replace with your frontend domain
+  }));
 app.use(express.urlencoded({extended:true}));
 
-app.get("/Search",cors(),async(req,res)=>{
-    const {msg}=req.body
-    const item={msg:msg}
-    const url = "www.thecocktaildb.com/api/json/v1/1/search.php?s=" + item
-    await axios.get(url)
-        .then((response)=>{
-            console.log(response.drinks);
-            res.json(response.drinks);
-        })
+app.get("/random", async (req, res) => {
+    console.log("get req received!");
+    try {
+        const response = await axios.get('https://www.thecocktaildb.com/api/json/v1/1/random.php');
+        res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error retrieving data from API');
+    }
+});
+
+app.post("/Favorites", cors(),async(req,res)=>{
+
 })
 
-app.post("/Search",async(req,res)=>{
-    
+app.post("/api/search", async(req,res)=>{
+    console.log("post req received from search!");
+    const searchTerm = req.body.term;
+    const apiUrl = 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + searchTerm;
+    try {
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+        const filteredResults = data.drinks || [];
+        res.json(filteredResults);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching search results from API');
+    }
 })
 
-app.listen(port, () => {
-    console.log('server running on port: ${port}');
+app.listen(PORT, () => {
+    console.log('server running on port: ' + PORT);
 });

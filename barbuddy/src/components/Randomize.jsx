@@ -1,8 +1,11 @@
 import React from "react";
+import RandomCocktail from "./RandomCocktail";
 
 function Randomize(){
     return (
-        <p>hi! get a random drink recipe here.</p>
+        <div  className="-mt-14 bg-background">
+             <RandomCocktail />
+        </div>
     );
 }
 

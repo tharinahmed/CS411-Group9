@@ -16,6 +16,8 @@ function App() {
         <Route exact path="/" element={<HomePage />} />
         <Route exact path="/random" element={<Randomize />} />
         <Route exact path="/discover" element={<Discover />} />
+        {/* <Route exact path="/my recipes" element={<Discover />} /> 
+        <Route exact path="/shopping list" element={<Discover />} /> */}
       </Routes>
     </BrowserRouter>
     </div>
