@@ -86,8 +86,8 @@ function NavBar() {
         <span className="badge badge-xs badge-primary indicator-item"></span>
       </div>
     </button>
-  </div>
-</div>
+    </div>
+    </div>
     );
 }
 export default NavBar;

@@ -1,9 +1,12 @@
 import React from "react";
+import CocktailList from "./CocktailList";
 
-function Discover(){
+function Discover() {
     return (
-        <p>hi! discover drinks here.</p>
+        <div className="-mt-1">
+            <CocktailList />
+        </div>
+        
     );
 }
-
 export default Discover;

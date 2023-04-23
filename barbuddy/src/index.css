@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: "azeret-mono";
+    src: url('https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300&display=swap');
+  }
