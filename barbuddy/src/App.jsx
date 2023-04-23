@@ -3,6 +3,7 @@ import React from "react";
 import NavBar from './components/NavBar';
 import Randomize from "./components/Randomize";
 import Discover from "./components/Discover";
+import Search from "./components/Search";
 
 function App() {
   return (
@@ -13,8 +14,8 @@ function App() {
         <Route exact path="/" element={<Discover />} />
         <Route exact path="/random" element={<Randomize />} />
         <Route exact path="/discover" element={<Discover />} />
-        {/* <Route exact path="/my recipes" element={<Discover />} /> 
-        <Route exact path="/shopping list" element={<Discover />} /> */}
+        <Route exact path="/search" element={<Search />} /> 
+        {/* <Route exact path="/shopping list" element={<Discover />} /> */}
       </Routes>
     </BrowserRouter>
     </div>

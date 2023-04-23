@@ -43,6 +43,20 @@ app.post("/api/search", async(req,res)=>{
     }
 })
 
+app.get("/filter", async(req,res)=>{
+  const filter = req.query.filter || '';
+  try {
+    const response = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=${filter}`);
+    const data = response.data;
+    // Return the filtered cocktails to the client
+    const filteredResults = data.drinks || [];
+    res.json(filteredResults);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+})
+
 app.listen(PORT, () => {
     console.log('server running on port: ' + PORT);
 });
