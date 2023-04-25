@@ -5,7 +5,7 @@ const RandomCocktail = () => {
   const [showDescription, setShowDescription] = useState(false);
 
   const fetchRandomCocktail = async () => {
-    const response = await fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php');
+    const response = await fetch('http://localhost:5000/random');
     const data = await response.json();
     setCocktail(data.drinks[0]);
     setShowDescription(false);

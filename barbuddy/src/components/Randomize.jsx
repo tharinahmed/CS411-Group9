@@ -6,7 +6,6 @@ function Randomize(){
         <div  className="-mt-14 bg-background">
              <RandomCocktail />
         </div>
-
     );
 }
 

@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 
 const CocktailList = () => {
   const [cocktails, setCocktails] = useState([]);
@@ -7,11 +8,16 @@ const CocktailList = () => {
 
   useEffect(() => {
     const fetchCocktails = async () => {
-      const response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=${selectedFilter === "All" ? "" : selectedFilter}`
-      );
-      const data = await response.json();
-      setCocktails(data.drinks);
+      try {
+        const response = await axios.get("http://localhost:5000/filter", {
+          params: {
+            filter: selectedFilter === "All" ? "" : selectedFilter,
+          },
+        });
+        setCocktails(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetchCocktails();
@@ -23,9 +29,9 @@ const CocktailList = () => {
         <div className="dropdown dropdown-bottom">
           <label tabIndex={0} className="btn m-1 bg-transparent lowercase text-highlights">Filter</label>
           <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-            <li>
+            {/*<li>
               <a onClick={() => setSelectedFilter("All")}>All</a>
-            </li>
+            </li>*/}
             <li>
               <a onClick={() => setSelectedFilter("Alcoholic")}>Alcoholic</a>
             </li>
