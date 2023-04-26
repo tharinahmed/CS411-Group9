@@ -1,8 +1,64 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function NavBar() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const storedLoginStatus = localStorage.getItem('loggedIn');
+    if (storedLoginStatus) {
+      setLoggedIn(true);
+    }
+  }, []);
+
+  const handleLoginSuccess = (credentialResponse) => {
+    // Store login status in local storage
+    localStorage.setItem('loggedIn', 'true');
+    setLoggedIn(true);
+    const token = credentialResponse;
+    console.log(token);
+
+    // send the token to the backend server
+    const response = fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token })
+    });
+
+    if (response.ok) {
+      setLoggedIn(true);
+    } else {
+      console.log('Login failed');
+    }
+  }
+
+  const handleLoginFailure = (error) => {
+    console.log('Login Failed', error);
+  }
+
+  const handleLogout = () => {
+    // Remove login status from local storage
+    localStorage.removeItem('loggedIn');
+    setLoggedIn(false);
+  }
+
+  const clientID='35199761323-iulfqrvu1aonnp9mtcdqlbctmjmphm0f.apps.googleusercontent.com';
+
+  const loginButton = (    
+    <GoogleOAuthProvider clientId={clientID}>
+      <GoogleLogin
+        onSuccess={handleLoginSuccess}
+        onFailure={handleLoginFailure}
+      />
+    </GoogleOAuthProvider>
+  )
+
   return(
-    <div className="navbar bg-base-100">
+  <div className="navbar bg-base-100">
   <div className="navbar-start">
     <div className="dropdown">
       <label tabIndex={0} className="btn btn-ghost btn-circle">
@@ -11,6 +67,7 @@ function NavBar() {
       <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
         <li><a href="/discover">Discover</a></li>
         <li><a href="/random">Randomize</a></li>
+        <li><a href="/favorites">Favorites</a></li>
       </ul>
     </div>
   </div>
@@ -18,6 +75,9 @@ function NavBar() {
     <a className="btn btn-ghost normal-case text-3xl" href="/">BarBuddy</a>
   </div>
   <div className="navbar-end">
+  <div>
+    {!loggedIn ? loginButton : <><h3 style={{ paddingLeft: 100, color: "#ffffff" }}>Logged In!</h3><button onClick={() => handleLogout()}>logout</button></>}
+  </div>
   <div> {/* add styling to the pop up search */}
     <a href="/search">
       <button className="btn btn-ghost btn-circle">
