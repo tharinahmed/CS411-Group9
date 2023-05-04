@@ -15,6 +15,19 @@ const RandomCocktail = () => {
     fetchRandomCocktail();
   }, []);
 
+  const FavoriteCocktail = async () => {
+    const response = await fetch('http://localhost:5000/user/add', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cocktail)
+    });
+    // Handle the response, e.g., show a notification message
+    console.log(response);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center font-azeret-mono">
       {cocktail ? (
@@ -50,6 +63,9 @@ const RandomCocktail = () => {
                 <p>{cocktail.strInstructions}</p>
               </>
             )}
+            <button className="bg-brand-500 text-white py-2 px-4 rounded-md mt-4" onClick={FavoriteCocktail}>
+              <i className="fa fa-star"></i> Favorite
+            </button>
           </div>
         </div>
       ) : null}

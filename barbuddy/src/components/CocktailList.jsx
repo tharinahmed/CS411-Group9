@@ -23,6 +23,9 @@ const CocktailList = () => {
     fetchCocktails();
   }, [selectedFilter]);
 
+  // add a function here like in RandomCocktail that allows you to favorite a cocktial to user database
+  // make sure you fecth the route /user/add
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center font-azeret-mono">
       <div className="mb-6">
