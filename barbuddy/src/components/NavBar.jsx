@@ -1,61 +1,86 @@
 import React, { useState, useEffect } from "react";
-import { GoogleLogin } from '@react-oauth/google';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+// import { GoogleLogin } from '@react-oauth/google';
+// import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function NavBar() {
   const [loggedIn, setLoggedIn] = useState(false);
 
+  // useEffect(() => {
+  //   // Check if user is already logged in
+  //   const storedLoginStatus = localStorage.getItem('loggedIn');
+  //   if (storedLoginStatus) {
+  //     setLoggedIn(true);
+  //   }
+  // }, []);
+
+  // const handleLoginSuccess = async (credentialResponse) => {
+  //   // Store login status in local storage
+  //   localStorage.setItem('loggedIn', 'true');
+  //   setLoggedIn(true);
+  //   const token = credentialResponse.credential;
+  //   console.log(token);
+
+  //   // send the token to the backend server
+  //   const response = await fetch('http://localhost:5000/api/login', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({ token })
+  //   });
+
+  //   if (response.ok) {
+  //     setLoggedIn(true);
+  //     const data = await response.json();
+  //     console.log(data)
+  //   } else {
+  //     console.log('Login failed');
+  //   }
+  // }
+
+  // const handleLoginFailure = (error) => {
+  //   console.log('Login Failed', error);
+  // }
+
   useEffect(() => {
-    // Check if user is already logged in
-    const storedLoginStatus = localStorage.getItem('loggedIn');
-    if (storedLoginStatus) {
+    const loggedInState = localStorage.getItem("loggedIn");
+    if (loggedInState === "true") {
       setLoggedIn(true);
     }
   }, []);
 
-  const handleLoginSuccess = (credentialResponse) => {
-    // Store login status in local storage
-    localStorage.setItem('loggedIn', 'true');
+  const handleAuthCallback = () => {
+    // call to backend to get token
+
+    // Update login status in local storage
+    localStorage.setItem('loggedIn', true);
+    // Update loggedIn state in parent component
     setLoggedIn(true);
-    const token = credentialResponse;
-    console.log(token);
-
-    // send the token to the backend server
-    const response = fetch('http://localhost:5000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ token })
-    });
-
-    if (response.ok) {
-      setLoggedIn(true);
-    } else {
-      console.log('Login failed');
-    }
-  }
-
-  const handleLoginFailure = (error) => {
-    console.log('Login Failed', error);
   }
 
   const handleLogout = () => {
-    // Remove login status from local storage
-    localStorage.removeItem('loggedIn');
-    setLoggedIn(false);
+    // Send a request to the backend to clear the user's session
+    fetch("http://localhost:5000/logout", {
+      method: "POST"
+    }).then(res => {
+      // Remove login status from local storage
+      localStorage.removeItem('loggedIn');
+      setLoggedIn(false);
+      document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    });
   }
 
-  const clientID='35199761323-iulfqrvu1aonnp9mtcdqlbctmjmphm0f.apps.googleusercontent.com';
+  // const clientID='35199761323-iulfqrvu1aonnp9mtcdqlbctmjmphm0f.apps.googleusercontent.com';
 
-  const loginButton = (    
-    <GoogleOAuthProvider clientId={clientID}>
-      <GoogleLogin
-        onSuccess={handleLoginSuccess}
-        onFailure={handleLoginFailure}
-      />
-    </GoogleOAuthProvider>
-  )
+  // const loginButton = (    
+  //   <GoogleOAuthProvider clientId={clientID}>
+  //     <GoogleLogin
+  //       onSuccess={handleLoginSuccess}
+  //       onFailure={handleLoginFailure}
+  //       isSignedIn
+  //     />
+  //   </GoogleOAuthProvider>
+  // )
 
   return(
   <div className="navbar bg-base-100">
@@ -75,9 +100,20 @@ function NavBar() {
     <a className="btn btn-ghost normal-case text-3xl" href="/">BarBuddy</a>
   </div>
   <div className="navbar-end">
-  <div>
+  {/* <div>
     {!loggedIn ? loginButton : <><h3 style={{ paddingLeft: 100, color: "#ffffff" }}>Logged In!</h3><button onClick={() => handleLogout()}>logout</button></>}
-  </div>
+  </div> */}
+    <div>
+    {loggedIn ? (
+        <>
+          <button onClick={handleLogout}>logout</button>
+        </>
+      ) : (
+        <a href="http://localhost:5000/auth/google" onClick={handleAuthCallback}>
+          Sign in with Google
+        </a>
+      )}
+    </div>
   <div> {/* add styling to the pop up search */}
     <a href="/search">
       <button className="btn btn-ghost btn-circle">
