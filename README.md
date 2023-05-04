@@ -10,6 +10,16 @@ Be sure to install project dependencies before running for the first time by usi
 ```
 npm i
 ```
+to start the project, set up two terminal windows and cd into the barbuddy folder. Then run:
+```
+node backend/server.js
+```
+
+in one terminal, and in the other, run:
+  
+```
+npm start
+```
 
 ## Project Dependencies
 
