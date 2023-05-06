@@ -4,6 +4,9 @@ The easiest way to discover new drinks.
 ---
 
 <details>
+  
+  see a demo of the project: https://youtu.be/jQcXR6TyBq8
+  
 <summary>⚠️ If you are cloning this repo</summary>
 Be sure to install project dependencies before running for the first time by using:
 
