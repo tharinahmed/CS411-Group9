@@ -52,23 +52,13 @@ passport.use(new GoogleStrategy({
   callbackURL: process.env.GOOGLE_CALLBACK_URL,
   passReqToCallback: true
 }, (req, accessToken, refreshToken, profile, done) => {
-  // session.accessToken = accessToken;
-  // handle the authenticated user
-  // Retrieve or create user in Firebase Auth with the user ID from the Google profile
   admin.auth().getUser(profile.id).then(userRecord => {
-    console.log('Existing user:', userRecord.toJSON());
-    // Set the passport user field with the user record
-    // You can access the user object using `req.user` in the route handlers
     done(null, userRecord.toJSON());
   }).catch(error => {
     if (error.code === 'auth/user-not-found') {
-      // If the user doesn't exist in Firebase Auth, create a new user with the user ID from the Google profile
       admin.auth().createUser({
         uid: profile.id
       }).then(userRecord => {
-        // console.log('New user:', userRecord.toJSON());
-        // Set the passport user field with the user record
-        // You can access the user object using `req.user` in the route handlers
         done(null, userRecord.toJSON());
       }).catch(error => {
         console.error('Error creating user:', error);
@@ -103,11 +93,9 @@ passport.deserializeUser((user, done) => {
 const ensureAuthenticated = (req, res, next) => {
   console.log("Checking authentication status");
   const sessionData = req.sessionStore.sessions;
-  const key = Object.keys(sessionData)[0]; // assuming there is only one key in the session object
-  const obj = JSON.parse(sessionData[key]); // parsing the JSON object into a JavaScript object
+  const key = Object.keys(sessionData)[0]; 
+  const obj = JSON.parse(sessionData[key]);
   const user = obj.passport.user;
-  // console.log("user data", user); // accessing the display name of the user
-  // console.log("is authenticated", req.isAuthenticated())
   if (user !== {} || user !== undefined || req.isAuthenticated()) {
     console.log("logged in");
     return next();
@@ -126,23 +114,19 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { prompt: 'consent', failureRedirect: 'http://localhost:3000/discover' }),
   (req, res) => {
-    // Generate a JWT for the authenticated user
-    // const token = jwt.sign({ userId: req.user.uid }, process.env.JWT_SECRET);
     req.login(req.user, (err) => {
       if (err) {
         console.error(err);
         return res.status(500).send('Internal Server Error');
       }
 
-    // Set the JWT in the client storage using cookies or localStorage
-    // res.cookie('jwt', token, { httpOnly: true }); // Example using cookies
     res.redirect('http://localhost:3000/discover');
     });
   });
 
 // Define route for logging out
 app.post('/logout', (req, res) => {
-  req.logOut();
+  req.logOut(); // make sure to give this a callback
   req.session.destroy();
   res.redirect('http://localhost:3000/discover');
   console.log("logged out!");
@@ -158,7 +142,7 @@ app.get("/random", async (req, res) => {
   }
 });
 
-app.get("/Favorites", ensureAuthenticated, async(req,res)=>{
+app.get("/ShoppingList/get", ensureAuthenticated, async(req,res)=>{
   try {
     const sessionData = req.sessionStore.sessions;
     const key = Object.keys(sessionData)[0]; // assuming there is only one key in the session object
@@ -166,15 +150,105 @@ app.get("/Favorites", ensureAuthenticated, async(req,res)=>{
     const user = obj.passport.user;
     const uid = user.uid;
 
-    // make sure to change it to serializing an ID token instead of the user id up in the strategy !
-    // Verify the ID token and get the user's information
-    // const decodedToken = await admin.auth().verifyIdToken(idToken);
-    // const uid = decodedToken.uid;
+    // Access the user's data in the Firebase Realtime Database
+    const keyVal = 'shoppingList';
+    const userRef = admin.database().ref('users/' + uid);
+    const newData = { [keyVal]: [] };
+
+    // Get userdata from database
+
+    userRef.once('value').then((snapshot) => {
+      const userData = snapshot.val();
+      if (userData && [keyVal] in userData) {
+        const shoppingList = Object.values(userData[keyVal]);
+        const shoppingListComp = {};
+        const promises = [];
+
+        for (const queryTerm of shoppingList) {
+          const promise = axios.get(
+            "https://serpapi.com/search.json?q=" + queryTerm + "&engine=google_images&ijn=0&api_key=" + process.env.SERPAPI_KEY
+          ).then(response => {
+            const queryData = response.data.images_results[0];
+            const imageUrl = queryData.thumbnail;
+            shoppingListComp[queryTerm] = imageUrl;
+          }).catch(error => {
+            console.log(error);
+          });
+
+          promises.push(promise);
+        }
+
+        Promise.all(promises).then(() => {
+          console.log(shoppingListComp);
+          res.json(shoppingListComp);
+        });
+      } else {
+        userRef.update(newData).then(() => {
+          console.log("added shopping list to user", uid);
+        })
+        res.json({});
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error retrieving shopping list from database');
+  }
+})
+
+app.post("/ShoppingList/add", ensureAuthenticated, async(req,res)=>{
+  try {
+    const sessionData = req.sessionStore.sessions;
+    const key = Object.keys(sessionData)[0]; 
+    const obj = JSON.parse(sessionData[key]);
+    const user = obj.passport.user;
+    const uid = user.uid;
+
+    // Post the user's data to the Firebase Realtime Database
+    const data = req.body.ingredient.ingredient;
+    const keyVal = 'shoppingList';
+    const userRef = admin.database().ref('users/' + uid);
+    const newData = { [keyVal]: [data] };
+    
+    // Check if the data already exists in the database
+    userRef.once('value').then((snapshot) => {
+      const userData = snapshot.val();
+      if (userData && [keyVal] in userData) {
+        const oldData = userData[keyVal];
+        if (oldData && Object.values(oldData).includes(data)) {
+          console.log("ingredient already there!")
+          res.sendStatus(201);
+        } else {
+          userRef.child(keyVal).push(data).then(() => {
+            console.log('added new data to the shopping list!');
+            res.sendStatus(200);
+          })
+        }
+      } else {
+        newData[keyVal].push(data);
+        userRef.update(newData).then(() => {
+          console.log('ooo new data in the shopping list!');
+          res.sendStatus(200);
+        });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Error posting to shopping list in database');
+  }
+})
+
+app.get("/Favorites", ensureAuthenticated, async(req,res)=>{
+  try {
+    const sessionData = req.sessionStore.sessions;
+    const key = Object.keys(sessionData)[0];
+    const obj = JSON.parse(sessionData[key]);
+    const user = obj.passport.user;
+    const uid = user.uid;
 
     // Access the user's data in the Firebase Realtime Database
     const userRef = admin.database().ref('users/' + uid);
 
-    // Check if the data already exists in the database
+    // Get userdata from database
     userRef.once('value').then((snapshot) => {
       const userData = snapshot.val();
       res.json(userData);
@@ -188,20 +262,14 @@ app.get("/Favorites", ensureAuthenticated, async(req,res)=>{
 app.post("/user/add", ensureAuthenticated, async(req,res)=>{
   try {
     const sessionData = req.sessionStore.sessions;
-    const key = Object.keys(sessionData)[0]; // assuming there is only one key in the session object
-    const obj = JSON.parse(sessionData[key]); // parsing the JSON object into a JavaScript object
+    const key = Object.keys(sessionData)[0];
+    const obj = JSON.parse(sessionData[key]);
     const user = obj.passport.user;
     const uid = user.uid;
 
-    // deal with the cocktail recipe to add
     const data = req.body;
     const keyVal = data.strDrink.toString();
     const newData = { [keyVal]: data };
-
-    // make sure to change it to serializing an ID token instead of the user id up in the strategy !
-    // Verify the ID token and get the user's information
-    // const decodedToken = await admin.auth().verifyIdToken(idToken);
-    // const uid = decodedToken.uid;
 
     // Access the user's data in the Firebase Realtime Database
     const userRef = admin.database().ref('users/' + uid);
@@ -209,7 +277,7 @@ app.post("/user/add", ensureAuthenticated, async(req,res)=>{
     // Check if the data already exists in the database
     userRef.once('value').then((snapshot) => {
       const userData = snapshot.val();
-      if (userData && [keyVal] in userData) { // check if the key is in the user's data
+      if (userData && [keyVal] in userData) {
         console.log("Key already exists!");
         res.sendStatus(200);
       } else {
@@ -245,7 +313,6 @@ app.get("/filter", async(req,res)=>{
   try {
     const response = await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=${filter}`);
     const data = response.data;
-    // Return the filtered cocktails to the client
     const filteredResults = data.drinks || [];
     res.json(filteredResults);
   } catch (error) {

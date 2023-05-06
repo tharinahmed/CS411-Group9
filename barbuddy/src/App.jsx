@@ -5,6 +5,7 @@ import Randomize from "./components/Randomize";
 import Discover from "./components/Discover";
 import Search from "./components/Search";
 import Favorites from "./components/Favorites";
+import ShoppingList from "./components/ShoppingList";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route exact path="/discover" element={<Discover />} />
         <Route exact path="/search" element={<Search />} /> 
         <Route exact path="/favorites" element={<Favorites />} />
-        {/* <Route exact path="/shopping list" element={<Discover />} /> */}
+        <Route exact path="/shoppinglist" element={<ShoppingList />} />
       </Routes>
     </BrowserRouter>
     </div>
