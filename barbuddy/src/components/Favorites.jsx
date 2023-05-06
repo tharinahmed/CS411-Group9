@@ -13,7 +13,7 @@ function Favorites() {
                 'Content-Type': 'application/json'
             }
         });
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 500) {
             // Redirect to login page
             window.location.href = 'http://localhost:3000/discover';
         } else {
@@ -28,6 +28,22 @@ function Favorites() {
       useEffect(() => {
         fetchFavorites();
       }, []);
+
+      const addIngredient = async(ingredient) => {
+        const response = await fetch('http://localhost:5000/ShoppingList/add', {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ingredient})
+          });
+          if (response.status === 201) {
+            alert('ingredient is already in your shopping list!');
+          } else {
+            console.log(response);
+          }
+      };
 
     return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center font-azeret-mono">
@@ -54,9 +70,12 @@ function Favorites() {
                                         const ingredient = cocktail[`strIngredient${i + 1}`];
                                         const measure = cocktail[`strMeasure${i + 1}`];
                                         return ingredient ? (
-                                            <li key={i}>
-                                                {measure ? `${measure.trim()} of` : ''} {ingredient}
-                                            </li>
+                                            <><div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <li key={i}>
+                                                    {measure ? `${measure.trim()} of` : ''} {ingredient}
+                                                </li>
+                                                <button key={i + "add"} onClick={() => addIngredient({ ingredient })}> (+)</button>
+                                            </div></>
                                         ) : null;
                                     })}
                                 </ul>

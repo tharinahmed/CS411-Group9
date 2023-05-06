@@ -1,46 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import { GoogleLogin } from '@react-oauth/google';
-// import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function NavBar() {
   const [loggedIn, setLoggedIn] = useState(false);
-
-  // useEffect(() => {
-  //   // Check if user is already logged in
-  //   const storedLoginStatus = localStorage.getItem('loggedIn');
-  //   if (storedLoginStatus) {
-  //     setLoggedIn(true);
-  //   }
-  // }, []);
-
-  // const handleLoginSuccess = async (credentialResponse) => {
-  //   // Store login status in local storage
-  //   localStorage.setItem('loggedIn', 'true');
-  //   setLoggedIn(true);
-  //   const token = credentialResponse.credential;
-  //   console.log(token);
-
-  //   // send the token to the backend server
-  //   const response = await fetch('http://localhost:5000/api/login', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({ token })
-  //   });
-
-  //   if (response.ok) {
-  //     setLoggedIn(true);
-  //     const data = await response.json();
-  //     console.log(data)
-  //   } else {
-  //     console.log('Login failed');
-  //   }
-  // }
-
-  // const handleLoginFailure = (error) => {
-  //   console.log('Login Failed', error);
-  // }
 
   useEffect(() => {
     const loggedInState = localStorage.getItem("loggedIn");
@@ -50,37 +11,19 @@ function NavBar() {
   }, []);
 
   const handleAuthCallback = () => {
-    // call to backend to get token
-
-    // Update login status in local storage
     localStorage.setItem('loggedIn', true);
-    // Update loggedIn state in parent component
     setLoggedIn(true);
   }
 
   const handleLogout = () => {
-    // Send a request to the backend to clear the user's session
     fetch("http://localhost:5000/logout", {
       method: "POST"
     }).then(res => {
-      // Remove login status from local storage
       localStorage.removeItem('loggedIn');
       setLoggedIn(false);
       document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     });
   }
-
-  // const clientID='35199761323-iulfqrvu1aonnp9mtcdqlbctmjmphm0f.apps.googleusercontent.com';
-
-  // const loginButton = (    
-  //   <GoogleOAuthProvider clientId={clientID}>
-  //     <GoogleLogin
-  //       onSuccess={handleLoginSuccess}
-  //       onFailure={handleLoginFailure}
-  //       isSignedIn
-  //     />
-  //   </GoogleOAuthProvider>
-  // )
 
   return(
   <div className="navbar bg-base-100">
@@ -93,6 +36,7 @@ function NavBar() {
         <li><a href="/discover">Discover</a></li>
         <li><a href="/random">Randomize</a></li>
         <li><a href="/favorites">Favorites</a></li>
+        <li><a href="/shoppinglist">Shopping List</a></li>
       </ul>
     </div>
   </div>
@@ -100,9 +44,6 @@ function NavBar() {
     <a className="btn btn-ghost normal-case text-3xl" href="/">BarBuddy</a>
   </div>
   <div className="navbar-end">
-  {/* <div>
-    {!loggedIn ? loginButton : <><h3 style={{ paddingLeft: 100, color: "#ffffff" }}>Logged In!</h3><button onClick={() => handleLogout()}>logout</button></>}
-  </div> */}
     <div>
     {loggedIn ? (
         <>
@@ -114,7 +55,7 @@ function NavBar() {
         </a>
       )}
     </div>
-  <div> {/* add styling to the pop up search */}
+  <div>
     <a href="/search">
       <button className="btn btn-ghost btn-circle">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
